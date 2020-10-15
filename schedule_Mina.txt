@@ -1,9 +1,9 @@
 Tasks:
-- Working on the data and task abstraction
-- Capturing data items, charactristics, types of features, and...
-- Checking the Munzner's Task Taxonomy for identifying the main tasks
-- Looking for any state of the arts for this project
-- working on data cleaning (Looking for preprocessing techniques and apply them to the data)
-- Working on data conversion
-- Working on ideas for designing of the visualization (Generate PES visualization) 
+- Working on the data and task abstraction (6 hours)
+- Capturing data items, charactristics, types of features, and... (6 hours)
+- Checking the Munzner's Task Taxonomy for identifying the main tasks (6 hours)
+- Looking for any state of the arts for this project (6 hours)
+- working on data cleaning (Looking for preprocessing techniques and apply them to the data) (6 hours)
+- Working on data conversion (8 hours)
+- Working on ideas for designing of the visualization (Generate PES visualization) (8 hours)
 

@@ -1,0 +1,5 @@
+Tasks:
+1) Recieve the data and clean (6 hours)
+2) Work on functional specs and data/task abstraction (8 hours)
+3) Decide on visual encodings(8 hours)
+4) Generate a basic chart showing the PES score over the past 3 decades (8 hours)
