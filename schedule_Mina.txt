@@ -3,7 +3,7 @@ Tasks:
 - Capturing data items, charactristics, types of features, and...
 - Checking the Munzner's Task Taxonomy for identifying the main tasks
 - Looking for any state of the arts for this project
-- working on data cleaning (Looking for preprocessing techniques and apply them on the data)
+- working on data cleaning (Looking for preprocessing techniques and apply them to the data)
 - Working on data conversion
-- Working on ideas for designing the of the visualization (Generate PES visualization) 
+- Working on ideas for designing of the visualization (Generate PES visualization) 
 
