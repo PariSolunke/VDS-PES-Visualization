@@ -192,9 +192,9 @@ var ogData=data,filtData=data;
 		var x=getXVal(data[i].wages);
 		geometry1.vertices.push(new THREE.Vector3(x,y ,z));
 		if(data[i].female==1)
-		geometry1.colors.push(new THREE.Color(0x8C0000));
+		geometry1.colors.push(new THREE.Color(0xebc36a));
 		else
-		geometry1.colors.push(new THREE.Color(0x071076));
+		geometry1.colors.push(new THREE.Color(0x2644ed));
 		}
 		var material1 = new THREE.PointsMaterial({
 			size: 3, transparent:true,opacity:1, vertexColors: THREE.VertexColors
@@ -217,18 +217,18 @@ else
 				var x1=getXVal(ogData[i].wages);
 				geometry1.vertices.push(new THREE.Vector3(x1,y1 ,z1));
 				if(ogData[i].female==1)
-				geometry1.colors.push(new THREE.Color(0x8C0000));
+				geometry1.colors.push(new THREE.Color(0xebc36a));
 				else
-				geometry1.colors.push(new THREE.Color(0x071076));
+				geometry1.colors.push(new THREE.Color(0x2644ed));
 				}
 				var z2=getZVal(filtData[i].year);
 				var y2=getYVal(filtData[i].precarity_age);
 				var x2=getXVal(filtData[i].wages);
 				geometry2.vertices.push(new THREE.Vector3(x2,y2 ,z2));
 				if(filtData[i].female==1)
-				geometry2.colors.push(new THREE.Color(0x8C0000));
+				geometry2.colors.push(new THREE.Color(0xebc36a));
 				else
-				geometry2.colors.push(new THREE.Color(0x071076));
+				geometry2.colors.push(new THREE.Color(0x2644ed));
 		
 			}
 		}
@@ -242,9 +242,9 @@ else
 				var x1=getXVal(ogData[i].wages);
 				geometry1.vertices.push(new THREE.Vector3(x1,y1 ,z1));
 				if(ogData[i].female==1)
-				geometry1.colors.push(new THREE.Color(0x8C0000));
+				geometry1.colors.push(new THREE.Color(0xebc36a));
 				else
-				geometry1.colors.push(new THREE.Color(0x071076));
+				geometry1.colors.push(new THREE.Color(0x2644ed));
 				if(i<filtData.length)
 				{
 				var z2=getZVal(filtData[i].year);
@@ -252,9 +252,9 @@ else
 				var x2=getXVal(filtData[i].wages);
 				geometry2.vertices.push(new THREE.Vector3(x2,y2 ,z2));
 				if(filtData[i].female==1)
-				geometry2.colors.push(new THREE.Color(0x8C0000));
+				geometry2.colors.push(new THREE.Color(0xebc36a));
 				else
-				geometry2.colors.push(new THREE.Color(0x071076));
+				geometry2.colors.push(new THREE.Color(0x2644ed));
 				}
 			}
 		}

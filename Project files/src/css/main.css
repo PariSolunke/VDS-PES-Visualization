@@ -7,7 +7,20 @@ body { color:#3e3e3e; margin-left :5px; margin-right :5px;  background:#dddddd; 
     background: #3e3e3e;
 
 }
+.disclaimer{
+    font-size:20px;
+    margin:2%;
+    margin-bottom: 1%;
+}
 
+#overlay{
+width:100%;
+position: absolute;
+z-index: 99;
+top:30;
+left: 30;
+margin-bottom: 0%;
+}
 svg {
     font-family: helvetica, sans-serif;
 }
