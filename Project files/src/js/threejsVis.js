@@ -1,3 +1,4 @@
+
 import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 
 d3.csv("/../../PESscores.csv").then(function(data) {
@@ -6,15 +7,15 @@ d3.csv("/../../PESscores.csv").then(function(data) {
 $(function() 
 {
 
-var getZ = d3.scaleLinear()
+var getZVal = d3.scaleLinear()
     .domain([1986, 2016])
 	.range([0, 10])
 	
-var getX = d3.scaleLinear()
+var getXVal = d3.scaleLinear()
     .domain([0, 370314])
 	.range([0, 10]);
 
-var getY = d3.scaleLinear()
+var getYVal = d3.scaleLinear()
     .domain([0, 8])
     .range([0, 10]);
 const scene = new THREE.Scene();
@@ -22,10 +23,10 @@ scene.background = new THREE.Color( 0xffffff );
 var iteration=1,filters=0;
 let box = document.querySelector('#scene');
 let width = box.clientWidth;
-const camera = new THREE.OrthographicCamera( -1, 12, 12, -1,1,1000 );
+const camera = new THREE.OrthographicCamera( -3, 13, 13, -3,1,1000 );
 const renderer = new THREE.WebGLRenderer();
 
-renderer.setSize( width, 700 );
+renderer.setSize( width, 750 );
 document.getElementById("scene").appendChild( renderer.domElement );
 
 //const geometry = new THREE.BoxGeometry();
@@ -43,27 +44,103 @@ axesColors.setXYZ( 4, 0, 0, 0 );
 axesColors.setXYZ( 5, 0, 0, 0 ); // blue
 const controls = new OrbitControls( camera, renderer.domElement );
 
+
+
 light.position.set(0,2,20);
 light.lookAt(0,0,0);
 camera.add(light);
 scene.add( camera );
 //scene.add( cube );
-camera.position.x = -12;
+
+camera.position.x = -17;
 controls.update();
-camera.position.z = 0;
+camera.position.z = 2.905087950614372;
 
 controls.update();
-camera.position.y = 0;
+camera.position.y = 3.673679755767618;
 controls.update();
 camera.lookAt(5,5,5)
 controls.update();
 
 scene.add( axesHelper );
+
+
+const loader = new THREE.FontLoader();
+
+loader.load( 'helvetiker_regular.typeface.json', function ( font ) {
+
+for(var i=1988; i<=2016; i=i+2) 
+{	var textGeo = new THREE.TextGeometry( i.toString(), {
+		font: font,
+		size: 0.20,
+		height: 0.35
+	} );
+	var material = new THREE.MeshBasicMaterial({color: 0x111111});
+var textMesh = new THREE.Mesh(textGeo, material); 
+textMesh.lookAt( camera.position );
+textMesh.position.set(0, -0.7, getZVal(i));
+
+scene.add(textMesh);
+}
+
+for(var i=0; i<=8; i++) 
+{	
+	if(i!=8)
+	var textGeo = new THREE.TextGeometry( i.toString(), {
+		font: font,
+		size: 0.20,
+		height: 0.35});
+	else
+	var textGeo = new THREE.TextGeometry( "No Job", {
+		font: font,
+		size: 0.20,
+		height: 0.35
+	} );	
+	var material = new THREE.MeshBasicMaterial({color: 0x111111});
+var textMesh = new THREE.Mesh(textGeo, material); 
+textMesh.lookAt( camera.position );
+textMesh.position.set(0,getYVal(i) , -1);
+
+scene.add(textMesh);
+}
+for(var i=0; i<=300000; i=i+50000) 
+{	var textGeo = new THREE.TextGeometry( i.toString(), {
+		font: font,
+		size: 0.20,
+		height: 0.35
+	} );
+	var material = new THREE.MeshBasicMaterial({color: 0x111111});
+var textMesh = new THREE.Mesh(textGeo, material); 
+textMesh.lookAt( camera.position );
+textMesh.position.set(getXVal(i), 0, -1 );
+scene.add(textMesh);
+
+if(i==50000)
+{
+	var textGeo = new THREE.TextGeometry( "Wage(USD)", {
+		font: font,
+		size: 0.20,
+		height: 0.35
+	} );
+	var material = new THREE.MeshBasicMaterial({color: 0x111111});
+var textMesh = new THREE.Mesh(textGeo, material); 
+textMesh.lookAt( camera.position );
+textMesh.position.set(getXVal(350000), 0, -1.2 );
+scene.add(textMesh);
+
+}
+}
 drawView();
+
+} );
+
 document.getElementById("selRace").addEventListener("change", drawView);
 document.getElementById("selGend").addEventListener("change", drawView);
 document.getElementById("selEdu").addEventListener("change", drawView);
 document.getElementById("selReg").addEventListener("change", drawView);
+
+
+
 
 function drawView()
 {
@@ -98,8 +175,8 @@ var ogData=data,filtData=data;
 		}
 		if(selGend!=3)
 		{
-		filtData = filtData.filter(d => d.gender==selGend);
-		ogData = ogData.filter(d => d.gender!=selReg);
+		filtData = filtData.filter(d => d.female==selGend);
+		ogData = ogData.filter(d => d.female!=selGend);
 		}
 	}
 	else
@@ -110,9 +187,9 @@ var ogData=data,filtData=data;
 	var geometry1 = new THREE.Geometry();
 	for(var i=0; i<data.length; i++) 
 	{
-		var z=getZ(data[i].year);
-		var y=getY(data[i].precarity_age);
-		var x=getX(data[i].wages);
+		var z=getZVal(data[i].year);
+		var y=getYVal(data[i].precarity_age);
+		var x=getXVal(data[i].wages);
 		geometry1.vertices.push(new THREE.Vector3(x,y ,z));
 		if(data[i].female==1)
 		geometry1.colors.push(new THREE.Color(0x8C0000));
@@ -135,18 +212,18 @@ else
 			{
 				if(i<ogData.length)
 				{
-				var z1=getZ(ogData[i].year);
-				var y1=getY(ogData[i].precarity_age);
-				var x1=getX(ogData[i].wages);
+				var z1=getZVal(ogData[i].year);
+				var y1=getYVal(ogData[i].precarity_age);
+				var x1=getXVal(ogData[i].wages);
 				geometry1.vertices.push(new THREE.Vector3(x1,y1 ,z1));
 				if(ogData[i].female==1)
 				geometry1.colors.push(new THREE.Color(0x8C0000));
 				else
 				geometry1.colors.push(new THREE.Color(0x071076));
 				}
-				var z2=getZ(filtData[i].year);
-				var y2=getY(filtData[i].precarity_age);
-				var x2=getX(filtData[i].wages);
+				var z2=getZVal(filtData[i].year);
+				var y2=getYVal(filtData[i].precarity_age);
+				var x2=getXVal(filtData[i].wages);
 				geometry2.vertices.push(new THREE.Vector3(x2,y2 ,z2));
 				if(filtData[i].female==1)
 				geometry2.colors.push(new THREE.Color(0x8C0000));
@@ -160,9 +237,9 @@ else
 			for(var i=0; i<ogData.length; i++) 
 			{
 				
-				var z1=getZ(ogData[i].year);
-				var y1=getY(ogData[i].precarity_age);
-				var x1=getX(ogData[i].wages);
+				var z1=getZVal(ogData[i].year);
+				var y1=getYVal(ogData[i].precarity_age);
+				var x1=getXVal(ogData[i].wages);
 				geometry1.vertices.push(new THREE.Vector3(x1,y1 ,z1));
 				if(ogData[i].female==1)
 				geometry1.colors.push(new THREE.Color(0x8C0000));
@@ -170,9 +247,9 @@ else
 				geometry1.colors.push(new THREE.Color(0x071076));
 				if(i<filtData.length)
 				{
-				var z2=getZ(filtData[i].year);
-				var y2=getY(filtData[i].precarity_age);
-				var x2=getX(filtData[i].wages);
+				var z2=getZVal(filtData[i].year);
+				var y2=getYVal(filtData[i].precarity_age);
+				var x2=getXVal(filtData[i].wages);
 				geometry2.vertices.push(new THREE.Vector3(x2,y2 ,z2));
 				if(filtData[i].female==1)
 				geometry2.colors.push(new THREE.Color(0x8C0000));
@@ -203,11 +280,22 @@ else
 
 
 
+document.getElementById("scene").addEventListener('pointerup', function(f){ 
+	
+	camera.lookAt(5,5,5);
+
+	for(var i=2; i<33;i++)
+	{
+	scene.children[i].lookAt(camera.position)}
+	
+});
 
 
 const animate = function () {
+			
 				requestAnimationFrame( animate );
 				controls.update();
+				
 
 				renderer.render( scene, camera );
 			};
