@@ -1,3 +1,6 @@
+
+The project is designed to run in 1920*1080 resolution at normal scaling.
+
 Run a python server in the project files folder.
 
 If the port number you have entered is 8000, the project will be at http://localhost:8000/project.html
