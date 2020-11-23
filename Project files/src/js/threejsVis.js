@@ -23,7 +23,10 @@ scene.background = new THREE.Color( 0xffffff );
 var iteration=1,filters=0;
 let box = document.querySelector('#scene');
 let width = box.clientWidth;
-const camera = new THREE.OrthographicCamera( -3, 13, 13, -3,1,1000 );
+
+const camera = new THREE.OrthographicCamera( -3, 12, 14, -1.5,1,1000 );
+//new THREE.PerspectiveCamera( 90, width / 750, 0.1, 10000 );
+
 const renderer = new THREE.WebGLRenderer();
 
 renderer.setSize( width, 750 );
@@ -111,7 +114,7 @@ for(var i=0; i<=300000; i=i+50000)
 	} );
 	var material = new THREE.MeshBasicMaterial({color: 0x111111});
 var textMesh = new THREE.Mesh(textGeo, material); 
-textMesh.lookAt( camera.position );
+textMesh.lookAt( -2,20,0 );
 textMesh.position.set(getXVal(i), 0, -1 );
 scene.add(textMesh);
 
@@ -124,8 +127,8 @@ if(i==50000)
 	} );
 	var material = new THREE.MeshBasicMaterial({color: 0x111111});
 var textMesh = new THREE.Mesh(textGeo, material); 
-textMesh.lookAt( camera.position );
-textMesh.position.set(getXVal(350000), 0, -1.2 );
+textMesh.lookAt( -2,20,0 );
+textMesh.position.set(getXVal(350000), 0, -2 );
 scene.add(textMesh);
 
 }
@@ -279,17 +282,18 @@ else
 
 
 
-
+/*
 document.getElementById("scene").addEventListener('pointerup', function(f){ 
 	
-	camera.lookAt(5,5,5);
-
+	setTimeout(function(){
 	for(var i=2; i<33;i++)
 	{
-	scene.children[i].lookAt(camera.position)}
+	scene.children[i].lookAt(camera.position)
+	}
+	},500);
 	
 });
-
+*/
 
 const animate = function () {
 			
