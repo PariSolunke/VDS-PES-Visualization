@@ -6,72 +6,70 @@ d3.csv("/../../PESscores.csv").then(function(data) {
 
 $(function() 
 {
-
+	
+//scale for z axis values for 3d plot
 var getZVal = d3.scaleLinear()
     .domain([1986, 2016])
 	.range([0, 10])
+
 	
+//scale for X axis values for 3d plot
 var getXVal = d3.scaleLinear()
     .domain([0, 370314])
 	.range([0, 10]);
 
+//scale for Y axis values for 3d plot
 var getYVal = d3.scaleLinear()
     .domain([0, 8])
-    .range([0, 10]);
+	.range([0, 10]);
+
+var colorWage = d3.scaleLinear()
+    .domain([0, 85000])
+	.range(["#bcbddc","#3f007d"])	
+	
+//initiating the scene	
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0xffffff );
 var iteration=1,filters=0;
 let box = document.querySelector('#scene');
 let width = box.clientWidth;
-
 const camera = new THREE.OrthographicCamera( -3, 12, 14, -1.5,1,1000 );
-//new THREE.PerspectiveCamera( 90, width / 750, 0.1, 10000 );
-
 const renderer = new THREE.WebGLRenderer();
-
 renderer.setSize( width, 750 );
 document.getElementById("scene").appendChild( renderer.domElement );
-
-//const geometry = new THREE.BoxGeometry();
-//const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-//const cube = new THREE.Mesh( geometry, material );
 const light = new THREE.DirectionalLight( 0xdddddd, 1.5);
+
+//initiating the axes guides and setting the colours
 const axesHelper = new THREE.AxesHelper( 10 );
 var axesColors = axesHelper.geometry.attributes.color;
-
-axesColors.setXYZ( 0, 0, 0, 0 ); // index, R, G, B
-axesColors.setXYZ( 1, 0, 0, 0 ); // red
+axesColors.setXYZ( 0, 0, 0, 0 ); 
+axesColors.setXYZ( 1, 0, 0, 0 ); 
 axesColors.setXYZ( 2, 0, 0, 0 );
-axesColors.setXYZ( 3, 0, 0, 0 ); // green
+axesColors.setXYZ( 3, 0, 0, 0 ); 
 axesColors.setXYZ( 4, 0, 0, 0 );
-axesColors.setXYZ( 5, 0, 0, 0 ); // blue
+axesColors.setXYZ( 5, 0, 0, 0 ); 
+
+//adding controls and light to the scene and setting camera position
 const controls = new OrbitControls( camera, renderer.domElement );
-
-
-
 light.position.set(0,2,20);
 light.lookAt(0,0,0);
 camera.add(light);
 scene.add( camera );
-//scene.add( cube );
-
 camera.position.x = -17;
 controls.update();
 camera.position.z = 2.905087950614372;
-
 controls.update();
 camera.position.y = 3.673679755767618;
 controls.update();
 camera.lookAt(5,5,5)
 controls.update();
-
 scene.add( axesHelper );
 
-
+//load the font for text mesh
 const loader = new THREE.FontLoader();
-
 loader.load( 'helvetiker_regular.typeface.json', function ( font ) {
 
+//adding textlabels to Z axis	
 for(var i=1988; i<=2016; i=i+2) 
 {	var textGeo = new THREE.TextGeometry( i.toString(), {
 		font: font,
@@ -82,10 +80,10 @@ for(var i=1988; i<=2016; i=i+2)
 var textMesh = new THREE.Mesh(textGeo, material); 
 textMesh.lookAt( camera.position );
 textMesh.position.set(0, -0.7, getZVal(i));
-
 scene.add(textMesh);
 }
 
+//adding textlabels to Y axis
 for(var i=0; i<=8; i++) 
 {	
 	if(i!=8)
@@ -103,9 +101,10 @@ for(var i=0; i<=8; i++)
 var textMesh = new THREE.Mesh(textGeo, material); 
 textMesh.lookAt( camera.position );
 textMesh.position.set(0,getYVal(i) , -1);
-
 scene.add(textMesh);
 }
+
+//adding textlabels to X axis
 for(var i=0; i<=300000; i=i+50000) 
 {	var textGeo = new THREE.TextGeometry( i.toString(), {
 		font: font,
@@ -130,21 +129,38 @@ var textMesh = new THREE.Mesh(textGeo, material);
 textMesh.lookAt( -2,20,0 );
 textMesh.position.set(getXVal(350000), 0, -2 );
 scene.add(textMesh);
+}
+}
 
-}
-}
+//calling the function to draw the 3d plot
 drawView();
+drawLegend();
 
 } );
-
+//redrawing views whenever filters get changed
 document.getElementById("selRace").addEventListener("change", drawView);
 document.getElementById("selGend").addEventListener("change", drawView);
 document.getElementById("selEdu").addEventListener("change", drawView);
 document.getElementById("selReg").addEventListener("change", drawView);
 
+$('input[name=3dToggle]').change(function(){
+    if($(this).is(':checked')) {
+		document.getElementById("scene").style.display =  "block";
+		document.getElementById("twoDim").style.display =  "none";
+		$('.filters').each(function(){ this.style.display="block";})
+    } else {
+		document.getElementById("scene").style.display =  "none";
+		document.getElementById("twoDim").style.display =  "block";
+		
+		$('.filters').each(function(){ this.style.display="none";})
 
 
 
+    }
+});
+
+
+//drawing the 3d plot
 function drawView()
 {
 var selRace=document.getElementById("selRace").value;
@@ -187,6 +203,7 @@ var ogData=data,filtData=data;
 	iteration++;
 	if(filters==0)
 	{
+	
 	var geometry1 = new THREE.Geometry();
 	for(var i=0; i<data.length; i++) 
 	{
@@ -204,6 +221,7 @@ var ogData=data,filtData=data;
 	  		});
 		var pointCloud = new THREE.Points(geometry1, material1);
 		scene.add(pointCloud);
+		drawTwoDimNoFilter(data,width);
 }
 else
 	{
@@ -239,7 +257,6 @@ else
 		{
 			for(var i=0; i<ogData.length; i++) 
 			{
-				
 				var z1=getZVal(ogData[i].year);
 				var y1=getYVal(ogData[i].precarity_age);
 				var x1=getXVal(ogData[i].wages);
@@ -271,10 +288,143 @@ else
 		var pointCloud2 = new THREE.Points(geometry2, material2);
 		scene.add(pointCloud);
 		scene.add(pointCloud2);
+		drawTwoDimFilters(filtData,ogData,width);
 
 	}
 
 }
+
+function drawLegend()
+{
+	var svg = d3.select("#svgOverview")
+
+
+
+}
+
+function drawTwoDimNoFilter(ogData,width)
+{
+
+document.getElementById("svgOverview").innerHTML="";
+// set the dimensions and margins of the graph
+var margin = {top: 30, right: 30, bottom: 30, left: 40},
+    width = width - margin.left - margin.right,
+    height = 780 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#svgOverview")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+		  "translate(" + margin.left + "," + margin.top + ")");
+
+
+		  var x = d3.scaleBand()
+		  .range([ 0, width ])
+		  .domain(["1988", "1990", "1992","1994","1996","1998","2000", "2002", "2004","2006","2008", "2010", "2012","2014","2016"])
+		  .paddingInner(1)
+		  .paddingOuter(.5)
+		svg.append("g")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(d3.axisBottom(x))
+	  
+		// Show the Y scale
+		var y = d3.scaleLinear()
+		  .domain([-0.5,8])
+		  .range([height, 0])
+		svg.append("g").call(d3.axisLeft(y).ticks(9).tickFormat(function(d) {
+			console.log(d) 
+			if(d == 8) return "Nojob";
+			else
+			return d;
+		  
+		   }))
+
+		var jitterWidth = 40;
+svg
+  .selectAll("indPoints")
+  .data(ogData)
+  .enter()
+  .append("circle")
+    .attr("cx", function(d){return(x(d.year) - jitterWidth/2 + Math.random()*jitterWidth )})
+    .attr("cy", function(d){return(y(d.precarity_age))})
+    .attr("r", 3)
+    .style("fill", function(d){
+
+		return colorWage(d.wages);
+	});
+    
+	  
+
+
+
+}
+
+/*Too slow
+function drawTwoDimFilters(filtData,ogData,width)
+{
+
+	document.getElementById("svgOverview").innerHTML="";
+	// set the dimensions and margins of the graph
+	var margin = {top: 30, right: 30, bottom: 30, left: 40},
+		width = width - margin.left - margin.right,
+		height = 780 - margin.top - margin.bottom;
+	
+	// append the svg object to the body of the page
+	var svg = d3.select("#svgOverview")
+	  .append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	  .append("g")
+		.attr("transform",
+			  "translate(" + margin.left + "," + margin.top + ")");
+	
+	
+			  var x = d3.scaleBand()
+			  .range([ 0, width ])
+			  .domain(["1988", "1990", "1992","1994","1996","1998","2000", "2002", "2004","2006","2008", "2010", "2012","2014","2016"])
+			  .paddingInner(1)
+			  .paddingOuter(.5)
+			svg.append("g")
+			  .attr("transform", "translate(0," + height + ")")
+			  .call(d3.axisBottom(x))
+		  
+			// Show the Y scale
+			var y = d3.scaleLinear()
+			  .domain([-0.5,8])
+			  .range([height, 0])
+			svg.append("g").call(d3.axisLeft(y))
+	
+			var jitterWidth = 40;
+	svg
+	  .selectAll("indPoints")
+	  .data(ogData)
+	  .enter()
+	  .append("circle")
+		.attr("cx", function(d){return(x(d.year) - jitterWidth/2 + Math.random()*jitterWidth )})
+		.attr("cy", function(d){return(y(d.precarity_age))})
+		.attr("r", 2)
+		.style("fill","grey" )
+		.style("opacity","0.2" );
+
+		svg
+  .selectAll("indPoints2")
+  .data(filtData)
+  .enter()
+  .append("circle")
+    .attr("cx", function(d){return(x(d.year) - jitterWidth/2 + Math.random()*jitterWidth )})
+    .attr("cy", function(d){return(y(d.precarity_age))})
+    .attr("r", 3)
+    .style("fill", function(d){
+
+		return colorWage(d.wages);
+	});
+
+
+}
+*/
 
 
 

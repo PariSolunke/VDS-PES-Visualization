@@ -98,7 +98,12 @@ function filterOnSelectedYear(){
   d3.csv("/../../PESscores.csv").then(function(data) {
     data = data.filter(d => d.year==selectedYear);
   // console.log(data)
-
+  
+  //div for tooltip
+  var div = d3.select("body")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
 
 
   precarity_scores = []
@@ -133,10 +138,40 @@ function filterOnSelectedYear(){
   var y = d3.scaleLinear()
     .domain([-1, max])          // Note that here the Y scale is set manually
     .range([height, 0])
-  gender_svg.append("g").call( d3.axisLeft(y) )
-  region_svg.append("g").call( d3.axisLeft(y) )
-  race_svg.append("g").call( d3.axisLeft(y) )
-  edu_svg.append("g").call( d3.axisLeft(y) )
+  gender_svg.append("g").call(d3.axisLeft(y).ticks(9).tickFormat(function(d) {
+    console.log(d) 
+    if(d == 8) return "Nojob";
+    else
+    return d;
+  
+   }))
+  region_svg.append("g").call(d3.axisLeft(y).ticks(9).tickFormat(function(d) {
+    console.log(d) 
+    if(d == 8) return "Nojob";
+    else
+    return d;
+  
+   }))
+  race_svg.append("g").call(d3.axisLeft(y).ticks(9).tickFormat(function(d) {
+    console.log(d) 
+    if(d == 8) return "Nojob";
+    else
+    return d;
+  
+   }))
+  edu_svg.append("g").call(d3.axisLeft(y).ticks(9).tickFormat(function(d) {
+    console.log(d) 
+    if(d == 8) return "Nojob";
+    else
+    return d;
+  
+   }))
+  
+
+    var div = d3.select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
 
   // Build and Show the X scale. It is a band scale like for a boxplot: each group has an dedicated RANGE on the axis. This range has a length of x.bandwidth
   var x = d3.scaleBand()
@@ -324,6 +359,33 @@ function filterOnSelectedYear(){
             .y(function(d){ return(y(d.x0)) } )
             .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
         )
+        .on("mouseover", function(d) {
+          var sum_x0 = 0;
+          var sum_x1 = 0;
+          var mean = 0;
+          var i;
+          for (i =0; i<d.length; i++ ){
+            console.log(d[i].length - 1);
+            console.log(d[i]);
+            sum_x0 += d[i]['x0'];
+            sum_x1 += d[i]['x1'];
+          }
+          console.log(sum_x0);
+          console.log(sum_x1);
+          mean = ((sum_x0 + sum_x1)/d.length) - 3;
+          div.transition()
+         .duration(200)
+         .style("opacity", .9);
+         div.text("mean: " + mean)// this will appear
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+})
+            // fade out tooltip on mouse out
+  .on("mouseout", function(d) {
+      div.transition()
+         .duration(500)
+         .style("opacity", 0);
+  });
 
   // Add the shape to this svg!
   region_svg
@@ -335,7 +397,7 @@ function filterOnSelectedYear(){
     .append("path")
         .datum(function(d){ return(d.value)})     // So now we are working bin per bin
         .style("stroke", "none")
-        .style("fill","#5c75f2")
+        .style("fill","#69b3a2")
         .style("opacity", 0.7)
         .attr("d", d3.area()
             .x0(function(d){ return(xNum2(-d.length)) } )
@@ -355,7 +417,7 @@ function filterOnSelectedYear(){
     .append("path")
         .datum(function(d){ return(d.value)})     // So now we are working bin per bin
         .style("stroke", "none")
-        .style("fill","#DB7093")
+        .style("fill","#69b3a2")
         .style("opacity", 0.7)
         .attr("d", d3.area()
             .x0(function(d){ return(xNum3(-d.length)) } )
@@ -374,7 +436,7 @@ function filterOnSelectedYear(){
     .append("path")
         .datum(function(d){ return(d.value)})     // So now we are working bin per bin
         .style("stroke", "none")
-        .style("fill","#FFD700")
+        .style("fill","#69b3a2")
         .style("opacity", 0.6)
         .attr("d", d3.area()
             .x0(function(d){ return(xNum4(-d.length)) } )
