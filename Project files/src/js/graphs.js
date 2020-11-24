@@ -45,6 +45,7 @@ var edu_svg = d3.select("#eduLevelPES")
   .append("g")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
+
           
 filterOnSelectedYear();
 
@@ -53,6 +54,7 @@ function filterOnSelectedYear(){
   document.querySelector('#regionPES svg').remove()
   document.querySelector('#racePES svg').remove()
   document.querySelector('#eduLevelPES svg').remove()
+ 
 
   var gender_svg = d3.select("#genderPES")
   .append("svg")
@@ -92,12 +94,12 @@ function filterOnSelectedYear(){
             "translate(" + margin.left + "," + margin.top + ")");
 
   var selectedYear = document.querySelector('#selYear').value;
-  console.log(selectedYear);
+
 
   // Read the data and compute summary statistics for each selected year
   d3.csv("/../../PESscores.csv").then(function(data) {
     data = data.filter(d => d.year==selectedYear);
-  // console.log(data)
+  
   
   //div for tooltip
   var div = d3.select("body")
@@ -120,7 +122,7 @@ function filterOnSelectedYear(){
       }
 
   }
-  // console.log(max)
+  
 
   //finding the min value
   var min = precarity_scores[0];
@@ -131,7 +133,6 @@ function filterOnSelectedYear(){
       }
 
   }
-  // console.log(min)
 
   // Build and Show the Y scale
   //decided to start at -1 since the min was -0.04 and it would make the graph look unpleasant
@@ -139,28 +140,28 @@ function filterOnSelectedYear(){
     .domain([-1, max])          // Note that here the Y scale is set manually
     .range([height, 0])
   gender_svg.append("g").call(d3.axisLeft(y).ticks(9).tickFormat(function(d) {
-    console.log(d) 
+ 
     if(d == 8) return "Nojob";
     else
     return d;
   
    }))
   region_svg.append("g").call(d3.axisLeft(y).ticks(9).tickFormat(function(d) {
-    console.log(d) 
+    
     if(d == 8) return "Nojob";
     else
     return d;
   
    }))
   race_svg.append("g").call(d3.axisLeft(y).ticks(9).tickFormat(function(d) {
-    console.log(d) 
+
     if(d == 8) return "Nojob";
     else
     return d;
   
    }))
   edu_svg.append("g").call(d3.axisLeft(y).ticks(9).tickFormat(function(d) {
-    console.log(d) 
+    
     if(d == 8) return "Nojob";
     else
     return d;
@@ -168,10 +169,6 @@ function filterOnSelectedYear(){
    }))
   
 
-    var div = d3.select("body")
-        .append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
 
   // Build and Show the X scale. It is a band scale like for a boxplot: each group has an dedicated RANGE on the axis. This range has a length of x.bandwidth
   var x = d3.scaleBand()
@@ -360,22 +357,23 @@ function filterOnSelectedYear(){
             .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
         )
         .on("mouseover", function(d) {
-          var sum_x0 = 0;
-          var sum_x1 = 0;
+          var sum = 0;
+          var counter = 0;
           var mean = 0;
           var i;
+          var j;
           for (i =0; i<d.length; i++ ){
-            console.log(d[i].length - 1);
-            console.log(d[i]);
-            sum_x0 += d[i]['x0'];
-            sum_x1 += d[i]['x1'];
+            for (j =0; j<d[i].length - 1; j++ ) //-1 to not get x0 and x1
+            sum += parseInt(d[i][j]);
+            counter += d[i].length -2 ; // if I add 1, it'll give i, but we need i * j for the total counter, therefore d[i].length times i (-2 to not get x0 and x1)
+
           }
-          console.log(sum_x0);
-          console.log(sum_x1);
-          mean = ((sum_x0 + sum_x1)/d.length) - 3;
+         
+          mean = sum/counter;
+          
           div.transition()
          .duration(200)
-         .style("opacity", .9);
+         .style("opacity", .8);
          div.text("mean: " + mean)// this will appear
          .style("left", (d3.event.pageX) + "px")
          .style("top", (d3.event.pageY - 28) + "px");
@@ -386,7 +384,6 @@ function filterOnSelectedYear(){
          .duration(500)
          .style("opacity", 0);
   });
-
   // Add the shape to this svg!
   region_svg
     .selectAll("myViolin")
@@ -398,13 +395,38 @@ function filterOnSelectedYear(){
         .datum(function(d){ return(d.value)})     // So now we are working bin per bin
         .style("stroke", "none")
         .style("fill","#69b3a2")
-        .style("opacity", 0.7)
+        .style("opacity", 1)
         .attr("d", d3.area()
             .x0(function(d){ return(xNum2(-d.length)) } )
             .x1(function(d){ return(xNum2(d.length)) } )
             .y(function(d){ return(y(d.x0)) } )
             .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
-        )
+        ).on("mouseover", function(d) {
+          var sum = 0;
+          var counter = 0;
+          var mean = 0;
+          var i;
+          var j;
+          for (i =0; i<d.length; i++ ){
+            for (j =0; j<d[i].length - 1; j++ ) //-1 to not get x0 and x1
+            sum += parseInt(d[i][j]);
+            counter += d[i].length -2 ; // if I add 1, it'll give i, but we need i * j for the total counter, therefore d[i].length times i (-2 to not get x0 and x1)
+
+          }
+          mean = sum/counter;
+          div.transition()
+         .duration(200)
+         .style("opacity", .9);
+         div.text("mean: " + mean)// this will appear
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+     })
+// fade out tooltip on mouse out
+.on("mouseout", function(d) {
+  div.transition()
+     .duration(500)
+     .style("opacity", 0);
+});
 
 
   // Add the shape to this svg!
@@ -418,13 +440,38 @@ function filterOnSelectedYear(){
         .datum(function(d){ return(d.value)})     // So now we are working bin per bin
         .style("stroke", "none")
         .style("fill","#69b3a2")
-        .style("opacity", 0.7)
+        .style("opacity", 1)
         .attr("d", d3.area()
             .x0(function(d){ return(xNum3(-d.length)) } )
             .x1(function(d){ return(xNum3(d.length)) } )
             .y(function(d){ return(y(d.x0)) } )
             .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
-        )
+        ) .on("mouseover", function(d) {
+          var sum = 0;
+          var counter = 0;
+          var mean = 0;
+          var i;
+          var j;
+          for (i =0; i<d.length; i++ ){
+            for (j =0; j<d[i].length - 1; j++ ) //-1 to not get x0 and x1
+            sum += parseInt(d[i][j]);
+            counter += d[i].length -2 ; // if I add 1, it'll give i, but we need i * j for the total counter, therefore d[i].length times i (-2 to not get x0 and x1)
+
+          }
+          mean = sum/counter;
+          div.transition()
+         .duration(200)
+         .style("opacity", .9);
+         div.text("mean: " + mean)// this will appear
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+     })
+// fade out tooltip on mouse out
+.on("mouseout", function(d) {
+  div.transition()
+     .duration(500)
+     .style("opacity", 0);
+});
 
   // Add the shape to this svg!
   edu_svg
@@ -437,13 +484,38 @@ function filterOnSelectedYear(){
         .datum(function(d){ return(d.value)})     // So now we are working bin per bin
         .style("stroke", "none")
         .style("fill","#69b3a2")
-        .style("opacity", 0.6)
+        .style("opacity", 1)
         .attr("d", d3.area()
             .x0(function(d){ return(xNum4(-d.length)) } )
             .x1(function(d){ return(xNum4(d.length)) } )
             .y(function(d){ return(y(d.x0)) } )
             .curve(d3.curveCatmullRom)    // This makes the line smoother to give the violin appearance. Try d3.curveStep to see the difference
-        )
+        )  .on("mouseover", function(d) {
+          var sum = 0;
+          var counter = 0;
+          var mean = 0;
+          var i;
+          var j;
+          for (i =0; i<d.length; i++ ){
+            for (j =0; j<d[i].length - 1; j++ ) //-1 to not get x0 and x1
+            sum += parseInt(d[i][j]);
+            counter += d[i].length -2 ; // if I add 1, it'll give i, but we need i * j for the total counter, therefore d[i].length times i (-2 to not get x0 and x1)
+
+          }
+          mean = sum/counter;
+          div.transition()
+         .duration(200)
+         .style("opacity", .9);
+         div.text("mean: " + mean)// this will appear
+         .style("left", (d3.event.pageX) + "px")
+         .style("top", (d3.event.pageY - 28) + "px");
+     })
+// fade out tooltip on mouse out
+.on("mouseout", function(d) {
+  div.transition()
+     .duration(500)
+     .style("opacity", 0);
+});
 
 
 

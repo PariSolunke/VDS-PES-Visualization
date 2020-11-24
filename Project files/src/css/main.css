@@ -24,3 +24,21 @@ margin-bottom: 0%;
 svg {
     font-family: helvetica, sans-serif;
 }
+
+/* Style for Custom Tooltip */
+.tooltip {
+ 	position: absolute;
+	text-align: center;
+	width: 120px;
+	height: 45px;
+	padding: 2px;
+	font: 12px sans-serif;
+	background: white;
+	border: 0px;
+	border-radius: 8px;
+	pointer-events: none;
+}
+
+path:hover {
+	fill-opacity: .7;
+}
